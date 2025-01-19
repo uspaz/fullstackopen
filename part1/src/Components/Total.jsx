@@ -3,7 +3,7 @@
 export const Total = ({total}) => {
   return (
     <>
-      <p>Número de ejercicios {total.exercises1 + total.exercises2 + total.exercises3}</p>
+      <p>Número de ejercicios {total[0].exercises + total[1].exercises + total[2].exercises}</p>
     </>
   )
 }

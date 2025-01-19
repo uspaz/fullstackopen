@@ -1,5 +1,5 @@
 
-/* eslint-disable react/prop-types */
+// eslint-disable-next-line react/prop-types
 export const Header = ({course}) => {
   return (
     
@@ -7,3 +7,5 @@ export const Header = ({course}) => {
 
   )
 }
+
+
