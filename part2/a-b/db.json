@@ -1,0 +1,8 @@
+{
+"phonebook": [
+    { "name": "Matias Teijeiro", "phone": "092838838", "id": 1 },
+    { "name": "Juan Perez", "phone": "092838838", "id": 2 },
+    { "name": "Maria Rodriguez", "phone": "092838838", "id": 3 },
+    { "name": "Jose Gomez", "phone": "092838838", "id": 4 }
+    ]
+}
