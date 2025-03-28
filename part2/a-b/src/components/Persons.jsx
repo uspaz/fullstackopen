@@ -1,11 +1,14 @@
 import React from 'react'
 
-export const Persons = ({ filteredPersons }) => {
+export const Persons = ({ filteredPersons, toggleDelete }) => {
   return (
 
     <ul>
         {filteredPersons.map(person => (
-            <li key={person.id}>{person.name} - {person.phone}</li>
+            <li key={person.id}>
+              {person.name} - {person.phone}
+              <button onClick={() => toggleDelete(person.id)}>eliminar</button>
+            </li>
           ))}   
       </ul>
   )

@@ -1,8 +1,36 @@
 {
-"phonebook": [
-    { "name": "Matias Teijeiro", "phone": "092838838", "id": 1 },
-    { "name": "Juan Perez", "phone": "092838838", "id": 2 },
-    { "name": "Maria Rodriguez", "phone": "092838838", "id": 3 },
-    { "name": "Jose Gomez", "phone": "092838838", "id": 4 }
-    ]
+  "phonebook": [
+    {
+      "id": "afe7",
+      "name": "Matias",
+      "phone": "092838838"
+    },
+    {
+      "id": "ceca",
+      "name": "Camila",
+      "phone": "091424960"
+    },
+    {
+      "id": "2d6a",
+      "name": "Santiago",
+      "phone": "092838838"
+    }
+  ],
+  "notes": [
+    {
+      "id": "1",
+      "content": "HTML is easy",
+      "important": true
+    },
+    {
+      "id": "2",
+      "content": "Browser can execute only JavaScript",
+      "important": false
+    },
+    {
+      "id": "3",
+      "content": "GET and POST are the most important methods of HTTP protocol",
+      "important": false
+    }
+  ]
 }
