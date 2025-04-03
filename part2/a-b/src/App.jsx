@@ -10,6 +10,7 @@ import { NoteForm } from "./components/NoteForm";
 
 // import noteService from './services/notes'
 import personService from './services/persons'
+import { Notification } from "./components/Notification";
 
 function App() {
   // const [notes, setNotes] = useState([])
@@ -18,6 +19,8 @@ const [searchValue, setSearchValue] = useState("");
 const [newPerson, setNewPerson] = useState( 
     {name: "", phone: ""}
   );
+const [message, setMessage] = useState({ text: "", type: ""});
+
 // const [newNote, setNewNote] = useState({content:""})
 
   // const courses = [
@@ -76,6 +79,16 @@ const [newPerson, setNewPerson] = useState(
     .getAll()
     .then( (persons) =>{
       setPersons(persons)
+      
+    })
+    .catch( () => {
+      setMessage({
+        text: "No se pudo cargar la lista de contactos",
+        type: "error"
+      })
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })
   
 }, [])
@@ -97,7 +110,23 @@ const [newPerson, setNewPerson] = useState(
     .create(newContact)
     .then( (person) => {
       setPersons(persons.concat(person))
+      setMessage({
+        text: "La persona fue agregada con exito",
+        type: "success"
+      })
+      setTimeout(() => {
+        setMessage(null)
+      }, 2000)
       setNewPerson({name: "", phone: ""})
+    })
+    .catch( () => {
+      setMessage({
+        text: "No se pudo agregar el contacto",
+        type: "error"
+      })
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })
       
 
@@ -118,10 +147,26 @@ const [newPerson, setNewPerson] = useState(
     
     const result = window.confirm(`Desea eliminar a ${person.name}`);
     if(result){
-      personService
+      personService 
       .deletePerson(id)
       .then( (res) => {        
         setPersons(persons.filter( (person) => person.id !== res.id))
+        setMessage({
+          text: "Se elimino el contacto con exito",
+          type: "success"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 2000)
+      })
+      .catch( () => {
+        setMessage({
+          text: "No se logro eliminar el contacto",
+          type: "error"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
     }
   }
@@ -146,6 +191,22 @@ const [newPerson, setNewPerson] = useState(
       .update(person.id, changedNote)
       .then( (res) => {   
         setPersons(persons.map( person => person.id !== res.id ? person : res))
+        setMessage({
+          text: "Se modifico el número con exito",
+          type: "changed"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 2000)
+      })
+      .catch( () => {
+        setMessage({
+          text: "No se logro modificar el contacto",
+          type: "error"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 2000)
       })
     }
   } 
@@ -223,6 +284,9 @@ const [newPerson, setNewPerson] = useState(
 
   return (
     <>
+
+      <Notification message={message} />
+
       <h1>Guía Teléfonica</h1>  
       <PersonsForm addToPerson={addToPerson} handleNewPerson={handleNewPerson} newPerson={newPerson} />
 
@@ -231,6 +295,7 @@ const [newPerson, setNewPerson] = useState(
       
       <h2>Contactos</h2>
       <Persons filteredPersons={filteredPersons} toggleDelete={toggleDelete} />
+
 
       {/* <h1>Nuevas notas</h1> */}
       {/* <NoteForm addNote={addNote} handleNewNote={handleNewNote} newNote={newNote} /> */}

@@ -1,18 +1,13 @@
 {
   "phonebook": [
     {
-      "id": "afe7",
-      "name": "Matias",
+      "id": "2d6a",
+      "name": "Santiago",
       "phone": "092838838"
     },
     {
-      "id": "ceca",
-      "name": "Camila",
-      "phone": "091424960"
-    },
-    {
-      "id": "2d6a",
-      "name": "Santiago",
+      "id": "d077",
+      "name": "Matias Teijeiro",
       "phone": "092838838"
     }
   ],
