@@ -1,6 +1,11 @@
 const express = require("express");
+const morgan = require("morgan")
 const app = express();
 
+morgan.token("body", function (req, res){ return JSON.stringify(req.body) })
+
+
+app.use(morgan(":body :method :url :response-time"))
 app.use(express.json());
 
 let persons = [
@@ -32,7 +37,6 @@ app.get("/api/persons", (req, res) => {
 })
 
 app.get("/info", (req, res) => {
-    console.log(req);
     
     res.send(`
         <div>
@@ -60,6 +64,7 @@ app.delete("/api/persons/:id", (req, res) => {
     persons = persons.filter( person => person.id != id)
     res.status(204).end()
 })
+
 
 app.post("/api/persons/", (req, res) => {
     const generateId = Math.random().toString(36).substring(2, 10);
