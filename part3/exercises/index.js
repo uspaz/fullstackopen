@@ -1,33 +1,35 @@
 const express = require("express");
 const morgan = require("morgan")
 const app = express();
+const cors = require("cors")
 
 morgan.token("body", function (req, res){ return JSON.stringify(req.body) })
 
 
 app.use(morgan(":body :method :url :response-time"))
 app.use(express.json());
+app.use(cors())
 
 let persons = [
     { 
       id: 1,
       name: "Arto Hellas", 
-      number: "040-123456"
+      phone: "040-123456"
     },
     { 
       id: 2,
       name: "Ada Lovelace", 
-      number: "39-44-5323523"
+      phone: "39-44-5323523"
     },
     { 
       id: 3,
       name: "Dan Abramov", 
-      number: "12-43-234345"
+      phone: "12-43-234345"
     },
     { 
       id: 4,
       name: "Mary Poppendieck", 
-      number: "39-23-6423122"
+      phone: "39-23-6423122"
     }
 ]
 
@@ -62,7 +64,8 @@ app.get("/api/persons/:id", (req, res) => {
 app.delete("/api/persons/:id", (req, res) => {
     const id = req.params.id;
     persons = persons.filter( person => person.id != id)
-    res.status(204).end()
+
+    res.json(persons)
 })
 
 
@@ -70,7 +73,7 @@ app.post("/api/persons/", (req, res) => {
     const generateId = Math.random().toString(36).substring(2, 10);
     const body = req.body;
 
-    if(!body.name || !body.number){
+    if(!body.name || !body.phone){
         res.status(400).json({
             error: "Deben completarse todos los campos"
         })
@@ -83,7 +86,7 @@ app.post("/api/persons/", (req, res) => {
     const newPerson = {
         id: generateId,
         name: body.name,
-        number: body.number
+        phone: body.phone
     }
 
     persons = persons.concat(newPerson)
