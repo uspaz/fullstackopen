@@ -9,6 +9,7 @@ export const Persons = ({ filteredPersons, toggleDelete }) => {
               {person.name} - {person.phone}
               <span> </span>
               <button onClick={() => toggleDelete(person.id)}>eliminar</button>
+              <span> </span>
             </li>
           ))}   
       </ul>

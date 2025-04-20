@@ -24,26 +24,32 @@ app.get("/api/persons", (req, res) => {
         }) 
 })
 
-// app.get("/info", (req, res) => {
+app.get("/api/persons/info", (req, res) => {
+    Contact.countDocuments({})
+    .then( (count) => {
+        res.send(`
+            <div>
+                <p>Phonebook has info for ${count} people</p>
+                <p>${Date()}</p>
+            <div/>
+            `
+        )
+    } )
     
-//     res.send(`
-//         <div>
-//             <p>Phonebook has info for ${persons.length} people</p>
-//             <p>${Date()}</p>
-//         <div/>
-//         `
-//     )
-// })
+})
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
     Contact.findById(req.params.id)
         .then( person => {
             if(person){
                 res.json(person);
             }else{
                 res.status(404).end()
-                return;
             }
+        })
+        .catch(err => {
+            console.log(err);
+            next(err)
         })
 })
 
@@ -51,10 +57,8 @@ app.delete("/api/persons/:id", (req, res) => {
     Contact.findByIdAndDelete(req.params.id)
         .then( person => {
             console.log(person.name, "has been removed");
-            return res.json(person)
+            res.status(204).end()
         } )
-
-    
 })
 
 
@@ -62,29 +66,17 @@ app.post("/api/persons/", (req, res) => {
     const body = req.body;    
 
     if(body.name && body.phone){
-
         
-        Contact.findOne({ name: body.name }).then( result => {
-
-            
-            if(result){
-                
-                console.log("The name has been unique");
-                res.status(400).end()
-                return;
-            }
-
-            const person = new Contact({
-                name: body.name,
-                phone: body.phone
-            })
-        
-        
-            person.save().then( addPerson => {
-                console.log("The contact has been added");
-                res.json(addPerson)
-            } )
+        const person = new Contact({
+            name: body.name,
+            phone: body.phone
         })
+    
+    
+        person.save().then( addPerson => {
+            console.log("The contact has been added");
+            res.json(addPerson)
+        } )
         
     }else{
         res.status(400).json({
@@ -94,6 +86,38 @@ app.post("/api/persons/", (req, res) => {
     
 })
 
+app.put("/api/persons/:id", (req, res) => {
+    const body = req.body;
+
+    const person = {
+        name: body.name,
+        phone: body.phone
+    }
+
+    Contact.findByIdAndUpdate( req.params.id, person, { new: true, runValudators: true, context: "query" })
+        .then( updatePerson => {
+            return res.json(updatePerson)
+        })
+        .catch( err => next(err))
+})
+
+
+const handleError = (err, req, res, next) => {
+    console.error(err.message);
+
+    if(err.name === "CastError"){ 
+        return res.status(400).send({ err: "malformatted id"})
+    }
+
+    if (err.name === "ValidationError") {
+        return res.status(400).json({ error: err.message });
+    }
+    
+    next(err)
+    
+}
+
+app.use(handleError)
 
 
 const PORT = process.env.PORT;

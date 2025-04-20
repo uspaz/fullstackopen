@@ -47,31 +47,58 @@ function App() {
     //   return changeNumber(newPerson.name, newPerson.phone);
     // }
 
-    personService
-    .create(newContact)
-    .then( (person) => {
+    const findContact = persons.find( person => person.name === newContact.name);
+    if(findContact){
       
-      setPersons(prev => [...prev, person])
-      setMessage({
-        text: "La persona fue agregada con exito",
-        type: "success"
+      personService
+      .update(findContact.id, newContact)
+      .then( (update) => {
+        setPersons(persons.map( person => person.id !== update.id ? person : update))
+        setMessage({
+          text: "Se modifico el contacto con exito",
+          type: "success"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 2000)
+        setNewPerson({name: "", phone: ""})
       })
-      setTimeout(() => {
-        setMessage(null)
-      }, 2000)
-      setNewPerson({name: "", phone: ""})
-    })
-    .catch( () => {
-      setMessage({
-        text: "No se pudo agregar el contacto",
-        type: "error"
+      .catch( () => {
+        setMessage({
+          text: "No se pudo agregar el contacto",
+          type: "error"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    })
-      
 
+    }else {
+
+      personService
+      .create(newContact)
+      .then( (person) => {
+        
+        setPersons(prev => [...prev, person])
+        setMessage({
+          text: "La persona fue agregada con exito",
+          type: "success"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 2000)
+        setNewPerson({name: "", phone: ""})
+      })
+      .catch( () => {
+        setMessage({
+          text: "No se pudo agregar el contacto",
+          type: "error"
+        })
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
+    }
   }
   
   function handleNewPerson(e){
@@ -85,11 +112,10 @@ function App() {
   }
 
   function toggleDelete(id){
-    
       personService 
       .deletePerson(id)
-      .then( (res) => {                
-        setPersons(persons.filter( (person) => person.id !== res.id))
+      .then( () => {                
+        setPersons(persons.filter( (person) => person.id !== id))
         setMessage({
           text: "Se elimino el contacto con exito",
           type: "success"
@@ -118,6 +144,7 @@ function App() {
   const filteredPersons = searchValue
   ? persons.filter(person => person.name.toLowerCase().includes(searchValue.toLowerCase()))
   : persons;
+  
 
   // function changeNumber (name, newPhone){
   //   const result = window.confirm(`Desea cambiar el número de ${newPerson.name} a ${newPerson.phone}`);
@@ -154,13 +181,13 @@ function App() {
       <Notifications message={message} />
 
       <h1>Guía Teléfonica</h1>  
-      <PersonsForm addToPerson={addToPerson} handleNewPerson={handleNewPerson} newPerson={newPerson} />
+      <PersonsForm addToPerson={addToPerson}  handleNewPerson={handleNewPerson} newPerson={newPerson}/>
 
       <h2>Filtro</h2>
       <Filter handleFilter={handleFilter} />
 
       <h2>Contactos</h2>
-      <Persons filteredPersons={filteredPersons} toggleDelete={toggleDelete} />
+      <Persons filteredPersons={filteredPersons} toggleDelete={toggleDelete}/>
     </>
   )
 }
