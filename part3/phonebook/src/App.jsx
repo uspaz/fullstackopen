@@ -51,7 +51,7 @@ function App() {
     .create(newContact)
     .then( (person) => {
       
-      setPersons(person)
+      setPersons(prev => [...prev, person])
       setMessage({
         text: "La persona fue agregada con exito",
         type: "success"
@@ -85,14 +85,11 @@ function App() {
   }
 
   function toggleDelete(id){
-    const person = persons.find( (person) => person.id === id);
     
-    const result = window.confirm(`Desea eliminar a ${person.name}`);
-    if(result){
       personService 
       .deletePerson(id)
       .then( (res) => {                
-        setPersons(res)
+        setPersons(persons.filter( (person) => person.id !== res.id))
         setMessage({
           text: "Se elimino el contacto con exito",
           type: "success"
@@ -110,7 +107,6 @@ function App() {
           setMessage(null)
         }, 5000)
       })
-    }
   }
 
 

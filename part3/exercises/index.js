@@ -1,99 +1,100 @@
+require("dotenv").config()
+
 const express = require("express");
-const morgan = require("morgan")
 const app = express();
+
+const Contact = require("./models/mongo")
+
 const cors = require("cors")
-
-morgan.token("body", function (req, res){ return JSON.stringify(req.body) })
-
 app.use(cors())
-app.use(express.static("dist"))
+
+const morgan = require("morgan")
+morgan.token("body", function (req, res){ return JSON.stringify(req.body) })
 app.use(morgan(":body :method :url :response-time"))
+
+app.use(express.static("dist"))
 app.use(express.json());
 
-let persons = [
-    { 
-      id: 1,
-      name: "Arto Hellas", 
-      phone: "040-123456"
-    },
-    { 
-      id: 2,
-      name: "Ada Lovelace", 
-      phone: "39-44-5323523"
-    },
-    { 
-      id: 3,
-      name: "Dan Abramov", 
-      phone: "12-43-234345"
-    },
-    { 
-      id: 4,
-      name: "Mary Poppendieck", 
-      phone: "39-23-6423122"
-    }
-]
 
 
 app.get("/api/persons", (req, res) => {
-    res.json(persons)
+    Contact.find({})
+        .then( persons => {
+            res.json(persons)
+        }) 
 })
 
-app.get("/info", (req, res) => {
+// app.get("/info", (req, res) => {
     
-    res.send(`
-        <div>
-            <p>Phonebook has info for ${persons.length} people</p>
-            <p>${Date()}</p>
-        <div/>
-        `
-    )
-})
+//     res.send(`
+//         <div>
+//             <p>Phonebook has info for ${persons.length} people</p>
+//             <p>${Date()}</p>
+//         <div/>
+//         `
+//     )
+// })
 
 app.get("/api/persons/:id", (req, res) => {
-    const id = req.params.id;
-    const person = persons.find( person => person.id == id)
-    
-    if(persons){
-        res.json(person);
-    }else{
-
-        res.status(404).end()
-    }
+    Contact.findById(req.params.id)
+        .then( person => {
+            if(person){
+                res.json(person);
+            }else{
+                res.status(404).end()
+                return;
+            }
+        })
 })
 
 app.delete("/api/persons/:id", (req, res) => {
-    const id = req.params.id;
-    persons = persons.filter( person => person.id != id)
+    Contact.findByIdAndDelete(req.params.id)
+        .then( person => {
+            console.log(person.name, "has been removed");
+            return res.json(person)
+        } )
 
-    res.json(persons)
+    
 })
 
 
 app.post("/api/persons/", (req, res) => {
-    const generateId = Math.random().toString(36).substring(2, 10);
-    const body = req.body;
+    const body = req.body;    
 
-    if(!body.name || !body.phone){
-        res.status(400).json({
-            error: "Deben completarse todos los campos"
+    if(body.name && body.phone){
+
+        
+        Contact.findOne({ name: body.name }).then( result => {
+
+            
+            if(result){
+                
+                console.log("The name has been unique");
+                res.status(400).end()
+                return;
+            }
+
+            const person = new Contact({
+                name: body.name,
+                phone: body.phone
+            })
+        
+        
+            person.save().then( addPerson => {
+                console.log("The contact has been added");
+                res.json(addPerson)
+            } )
         })
-    }else if(persons.find( person => person.name == body.name)){
+        
+    }else{
         res.status(400).json({
-            error: "El nombre debe ser único"
+            error: "All fields must be completed"
         })
     }
-
-    const newPerson = {
-        id: generateId,
-        name: body.name,
-        phone: body.phone
-    }
-
-    persons = persons.concat(newPerson)
-    res.json(persons)
+    
 })
 
 
 
-const PORT = 3001;
+const PORT = process.env.PORT;
 app.listen(PORT);
