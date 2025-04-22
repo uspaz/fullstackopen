@@ -1,7 +1,6 @@
 require("dotenv").config()
-
-const express = require("express");
-const app = express();
+const express = require("express")
+const app = express()
 
 const Contact = require("./models/mongo")
 
@@ -9,11 +8,11 @@ const cors = require("cors")
 app.use(cors())
 
 const morgan = require("morgan")
-morgan.token("body", function (req, res){ return JSON.stringify(req.body) })
+morgan.token("body", function (req){ return JSON.stringify(req.body) })
 app.use(morgan(":body :method :url :response-time"))
 
 app.use(express.static("dist"))
-app.use(express.json());
+app.use(express.json())
 
 
 
@@ -25,18 +24,18 @@ app.get("/api/persons", (req, res, next) => {
         .catch( err => next(err))
 })
 
-app.get("/api/persons/info", (req, res) => {
+app.get("/api/persons/info", (req, res, next) => {
     Contact.countDocuments({})
-    .then( (count) => {
-        res.send(`
-            <div>
-                <p>Phonebook has info for ${count} people</p>
-                <p>${Date()}</p>
-            <div/>
-            `
-        )
-    })
-    .catch( err => next(err))
+        .then( (count) => {
+            res.send(`
+                <div>
+                    <p>Phonebook has info for ${count} people</p>
+                    <p>${Date()}</p>
+                <div/>
+                `
+            )
+        })
+        .catch( err => next(err))
     
 })
 
@@ -44,7 +43,7 @@ app.get("/api/persons/:id", (req, res, next) => {
     Contact.findById(req.params.id)
         .then( person => {
             if(person){
-                res.json(person);
+                res.json(person)
             }else{
                 res.status(404).end()
             }
@@ -55,7 +54,7 @@ app.get("/api/persons/:id", (req, res, next) => {
 app.delete("/api/persons/:id", (req, res, next) => {
     Contact.findByIdAndDelete(req.params.id)
         .then( person => {
-            console.log(person.name, "has been removed");
+            console.info(person.name, "has been removed")
             res.status(204).end()
         })
         .catch( err => next(err))
@@ -63,7 +62,7 @@ app.delete("/api/persons/:id", (req, res, next) => {
 
 
 app.post("/api/persons/", (req, res, next) => {
-    const body = req.body;    
+    const body = req.body
 
     if(body.name && body.phone){
         
@@ -75,7 +74,7 @@ app.post("/api/persons/", (req, res, next) => {
     
         person.save()
             .then( addPerson => {
-                console.log("The contact has been added");
+                console.info("The contact has been added")
                 res.json(addPerson)
             })
             .catch( err => next(err))
@@ -89,7 +88,7 @@ app.post("/api/persons/", (req, res, next) => {
 })
 
 app.put("/api/persons/:id", (req, res, next) => {
-    const body = req.body;
+    const body = req.body
 
     const person = {
         name: body.name,
@@ -104,18 +103,19 @@ app.put("/api/persons/:id", (req, res, next) => {
 })
 
 
-const PORT = process.env.PORT;
-app.listen(PORT);
+const PORT = process.env.PORT
+app.listen(PORT)
 
 const handleError = (err, req, res, next) => {
-    console.error(err.message);
+    console.error(err.message)
+    
 
     if(err.name === "CastError"){ 
         return res.status(400).send({ err: "malformatted id"})
     }
 
     if (err.name === "ValidationError") {
-        return res.status(400).json({ error: err.message });
+        return res.status(400).json({ error: err.message })
     }
     
     next(err)
