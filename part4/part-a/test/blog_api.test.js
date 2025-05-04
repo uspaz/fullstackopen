@@ -174,6 +174,25 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     
     })
 
+    test("modificando likes", async () => {
+      const blogAtStart = await blogsInDb()
+      const { title, author, url, likes, id } =  blogAtStart[0]
+      
+      await api
+        .put(`/api/blogs/${id}`)
+        .send({title, author, url, likes: 9})
+        .expect(202)
+        .expect("Content-Type", /application\/json/)
+        .catch(err => console.log(err))
+
+      const res = await blogsInDb()
+      
+
+       assert(res[0].likes !== likes)
+
+
+    })
+
   })
 })
 
