@@ -1,6 +1,17 @@
+require("dotenv").config()
+const jwt = require("jsonwebtoken")
 const noteRouter = require("express").Router()
 const Note = require("../models/note")
 const User = require("../models/user")
+
+
+const getTokenFrom = (req) => {
+    const authorization = req.get("authorization")
+    if(authorization && authorization.startsWith("Bearer ")){
+        return authorization.replace("Bearer ", "")
+    }
+    return null
+}
 
 
 noteRouter.get('/', async (req, res) => {
@@ -23,8 +34,14 @@ noteRouter.delete("/:id", async (req, res) => {
 
 noteRouter.post("/", async (req, res) => {
     const body = req.body
-    const user = await User.findById( body.userId)
+    const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
+    console.log(decodedToken);
+    
+    if(!decodedToken.id){
+        return res.status(401).json({ error: "token invalid" })
+    }
 
+    const user = await User.findById(decodedToken.id) 
 
     if(body.content){
         const note = new Note({
