@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const userRouter = require("./controllers/users")
 const noteRouter = require("./controllers/notes")
+const loginRouter = require("./controllers/login")
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger")
 const config = require("./utils/config")
@@ -27,6 +28,7 @@ app.use(middleware.requestLogger)
 
 app.use("/api/notes", noteRouter)
 app.use("/api/user", userRouter)
+app.use("/api/login", loginRouter)
 
 app.use(middleware.handleError)
 app.use(middleware.unknownEndpoint)
