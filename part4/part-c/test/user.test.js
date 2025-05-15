@@ -36,7 +36,7 @@ describe("cuando inicialmente hay un usuario en la db", () => {
             .expect("Content-Type", /application\/json/)
 
         const usersAtEnd = await usersInDb()
-        console.log(usersAtEnd);
+        
         
         
         assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
