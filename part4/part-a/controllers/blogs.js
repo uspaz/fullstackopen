@@ -26,9 +26,9 @@ blogsRouter.delete('/:id', async (req, res) => {
 
 blogsRouter.post('/',  async (req, res) => {
     const body = req.body
-    console.log(req);
     
-    // const decodedToken = jwt.verify(req.token, process.env.SECRET)
+    
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
     console.log(decodedToken);
     
 

@@ -47,9 +47,9 @@ const tokenExtractor = (req, res, next) => {
     const authorization = req.headers.authorization
     
     if(authorization && authorization.startsWith("Bearer ")){
-        return authorization.replace("Bearer ", "")
+        req.token = authorization.replace("Bearer ", "")
     }
-    
+        
     next()
 }
 
