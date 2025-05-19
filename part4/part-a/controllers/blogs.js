@@ -19,12 +19,13 @@ blogsRouter.get('/:id', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
     const blog = await Blog.findById(req.params.id)
-    const decodedUser = jwt.verify(req.token, process.env.SECRET)
 
+    if(blog === null) return res.status(404).json({ error: "no existe ningún blog" })
     
-    if(decodedUser.id.toString() === blog.user.toString()) {
+    if(req.user.id.toString() === blog.user.toString()) {
         await Blog.findByIdAndDelete(req.params.id)
         res.status(204).end()
+
     }else{
         res.status(401).json({
             error: "no tiene permisos"
@@ -35,20 +36,15 @@ blogsRouter.delete('/:id', async (req, res) => {
 })
 
 blogsRouter.post('/',  async (req, res) => {
-    const body = req.body
-    
-    
-    const decodedToken = jwt.verify(req.token, process.env.SECRET)
-    console.log(decodedToken);
-    
+    const body = req.body    
 
-    if(!decodedToken.id){
+    if(!req.user.id){
         return res.status(401).json({
             error: "token invalid"
         })
     }
 
-    const user = await User.findById(decodedToken.id)
+    const user = await User.findById(req.user.id)
 
 const blog = new Blog({
     title: body.title,

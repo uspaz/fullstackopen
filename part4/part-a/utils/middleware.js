@@ -1,4 +1,5 @@
 const logger = require("./logger")
+const jwt = require("jsonwebtoken")
 
 const requestLogger = (req, res, next) => {
     logger.info("Method:", req.method)
@@ -53,10 +54,22 @@ const tokenExtractor = (req, res, next) => {
     next()
 }
 
+const userExtractor = (req, res, next) => {
+
+    const decodedUser = jwt.verify(req.token, process.env.SECRET)
+    if(!decodedUser.id){
+        return res.status(401).send({ error: "token invalid or expired" })
+    }
+    req.user = decodedUser;
+
+    next()
+}
+
 
 module.exports = {
     requestLogger,
     unknownEndpoint,
     handleError,
-    tokenExtractor
+    tokenExtractor,
+    userExtractor
 }
