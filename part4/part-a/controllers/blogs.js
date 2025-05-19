@@ -18,9 +18,19 @@ blogsRouter.get('/:id', async (req, res) => {
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
+    const blog = await Blog.findById(req.params.id)
+    const decodedUser = jwt.verify(req.token, process.env.SECRET)
 
-    await Blog.findByIdAndDelete(req.params.id) 
-    res.status(204).end()
+    
+    if(decodedUser.id.toString() === blog.user.toString()) {
+        await Blog.findByIdAndDelete(req.params.id)
+        res.status(204).end()
+    }else{
+        res.status(401).json({
+            error: "no tiene permisos"
+        })
+    }
+
     
 })
 
