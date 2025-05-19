@@ -1,20 +1,17 @@
+const supertest = require("supertest")
+const app = require("../app")
+const api = supertest(app)
+
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
 const initialBlogs = [
   {
-    id: "680a1e41df99318d13fa8b07",
-    title:"Ella tiene un capricho que es enorme",
-    author: "YSY A",
-    url: "https://www.youtube.com/watch?v=-1C4IPmnB70&ab_channel=YSYA-Topic",
-    likes: 86
-  },
-  {
-    id: "680d916f4c0958fb7f82488d",
-    title:"Los juegos del hambre",
-    author: "Suzanne Collins",
-    url: "https://en.wikipedia.org/wiki/Suzanne_Collins",
-    likes: 23
+    title: 'Async/await simplifies making async calls',
+    author: 'FullStackOpen',
+    url: 'http://prueba.com',
+    likes: 200,
+    user: "682b178ac82763b898f480b6"
   }
 ]
 
@@ -37,6 +34,17 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
+const getAuthHeader = async () => {
+  const user = await api
+        .post("/api/login")
+        .send({username: "uspaz", password: "uspaz"})
+        .expect(200)
+        .expect("Content-Type", /application\/json/)
+  
+  return user.body
+}
+
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb, usersInDb
+  initialBlogs, nonExistingId, blogsInDb, usersInDb,getAuthHeader
+
 }

@@ -40,6 +40,32 @@ describe("creación de usuarios y validaciones", () => {
         
         assert.strictEqual(usersAtStart.length, usersAtEnd.length)
     })
+
+    test("crear un nuevo usuario", async () => {
+        const usersAtStart = await usersInDb()
+
+        const newUser = {
+            username: "uspaz",
+            name: "Matias",
+            password: "uspaz"
+        }
+        
+        await api
+            .post("/api/users")
+            .send(newUser)
+            .expect(201)
+            .expect("Content-Type", /application\/json/)
+
+        const usersAtEnd = await usersInDb()
+        
+        
+        
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+        const usernames = usersAtEnd.map(u => u.username)
+        assert(usernames.includes(newUser.username))
+
+    })
 })
 
 after(async () => {

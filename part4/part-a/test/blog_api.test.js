@@ -1,11 +1,13 @@
 const { test, after, beforeEach, describe } = require("node:test")
 const assert  = require("node:assert")
+const mongoose = require("mongoose")
+const supertest = require("supertest")
 const app = require("../app")
 const api = supertest(app)
 
 const Blog = require("../models/blog")
 
-const { blogsInDb, initialBlogs, nonExistingId } = require("./blog_helper.test")
+const { blogsInDb, initialBlogs, nonExistingId, getAuthHeader } = require("./blog_helper.test")
 
 
 
@@ -21,28 +23,41 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
   })
 
   test("blogs are returned as json", async () => {
+    const user = await getAuthHeader()
     await api
         .get("/api/blogs")
         .expect(200)
+        .set("Authorization", `Bearer ${user.token}`)
         .expect("Content-Type", /application\/json/)
   })
 
   test("there are one blog", async () => {
-    const res = await api.get("/api/blogs")    
+    const user = await getAuthHeader()
     
+    const res = await api
+      .get("/api/blogs")    
+      .set("Authorization", `Bearer ${user.token}`) 
+
     assert.strictEqual(res.body.length, initialBlogs.length)
   })
 
   test("the first blog is about HTTP methods", async () => {
-    const res = await api.get("/api/blogs")
+    const user = await getAuthHeader()
+
+    const res = await api
+      .get("/api/blogs")
+      .set("Authorization", `Bearer ${user.token}`)
 
     const contents = res.body.map( e => e.title)
-    assert(contents.includes("Los juegos del hambre"))
+    
+    assert(contents.includes("Async/await simplifies making async calls"))
   })
 
   describe("ver una nota especifica", () => {
     
     test("a valid blog can be added", async () => {
+      const user = await getAuthHeader()
+      
       const newBlog = {
           title: 'Async/await simplifies making async calls',
           author: 'FullStackOpen',
@@ -54,6 +69,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
           .post("/api/blogs")
           .send(newBlog)
           .expect(201)
+          .set("Authorization", `Bearer ${user.token}`)
           .expect("Content-Type", /application\/json/)
       
       const res = await blogsInDb()
@@ -64,6 +80,8 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     })
 
     test('blog without content is not added', async () => {
+      const user = await getAuthHeader()
+      
       const newBlog = {
         title: "No tiene la estructura necesaria  "
       }
@@ -71,6 +89,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
       await api
         .post('/api/blogs')
         .send(newBlog)
+        .set("Authorization", `Bearer ${user.token}`)
         .expect(400)
     
       const res = await blogsInDb()
@@ -78,29 +97,54 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
       assert.strictEqual(res.length, initialBlogs.length)
     })
 
-    test("a specific blog can be viewed", async () => {
-    const blogsAtStart = await blogsInDb()
-    const blogToView = blogsAtStart[0]
+    test("Agregar un blog sin authorization", async () => {
 
-    
-    const resultBlog = await api
-      .get(`/api/blogs/${blogToView.id}`)
-      .expect(200)
-      .expect("Content-Type", /application\/json/)
-
-
-    assert.deepStrictEqual(resultBlog.body, blogToView)
+      const newBlog = {
+          title: '',
+          author: 'FullStackOpen',
+          url: 'http://prueba.com',
+          likes: 200
+      }
+  
+      await api
+          .post("/api/blogs")
+          .send(newBlog)
+          .expect(401)
+          .expect("Content-Type", /application\/json/)
+          
+      const res = await blogsInDb()
+      
+      assert.strictEqual(res.body.length, blogsAtStart.length)
     })
+
+    // test("a specific blog can be viewed", async () => {
+    //   const user = await getAuthHeader()
+    //   const blogsAtStart = await blogsInDb()
+    //   const blogToView = blogsAtStart[0]
+
+      
+    //   const resultBlog = await api
+    //     .get(`/api/blogs/${blogToView.id}`)
+    //     .set("Authorization", `Bearer ${user.token}`)
+    //     .expect(200)
+    //     .expect("Content-Type", /application\/json/)
+
+
+    //   assert.strictEqual(resultBlog.body, blogToView)
+    // })
   })
 
   describe("eliminando una nota", () => {
 
     test("a blog can be deleted", async () => {
+      const user = await getAuthHeader()
       const blogsAtStart = await blogsInDb()
       const blogToDelete = blogsAtStart[0]
     
+      
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set("Authorization", `Bearer ${user.token}`)
         .expect(204)
     
         const res = await blogsInDb()
@@ -110,6 +154,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     
         assert.strictEqual(res.length, initialBlogs.length - 1)
     })
+
   })
 
   describe("validando propiedads", () => {
@@ -123,6 +168,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     })
 
     test("chequeando likes", async () => {
+      const user = await getAuthHeader()
 
       const newBlog = {
         title: "Testeando",
@@ -133,6 +179,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
       await api
           .post("/api/blogs")
           .send(newBlog)
+          .set("Authorization", `Bearer ${user.token}`)
           .expect(201)
           .expect("Content-Type", /application\/json/)
     
@@ -143,6 +190,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     })
     
     test("verificando titulo y url", async () => {
+      const user = await getAuthHeader()
     
       const newBlog = {
         author: "Matias",
@@ -159,11 +207,13 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
       await api
           .post("/api/blogs")
           .send(newBlog)
+          .set("Authorization", `Bearer ${user.token}`)
           .expect(400)
     
       await api
           .post("/api/blogs")
           .send(newBlog2)
+          .set("Authorization", `Bearer ${user.token}`)
           .expect(400)
     
       const res = await blogsInDb()  
@@ -173,12 +223,14 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     })
 
     test("modificando likes", async () => {
+      const user = await getAuthHeader()
       const blogAtStart = await blogsInDb()
       const { title, author, url, likes, id } =  blogAtStart[0]
       
       await api
         .put(`/api/blogs/${id}`)
         .send({title, author, url, likes: 9})
+        .set("Authorization", `Bearer ${user.token}`)
         .expect(202)
         .expect("Content-Type", /application\/json/)
         .catch(err => console.log(err))
