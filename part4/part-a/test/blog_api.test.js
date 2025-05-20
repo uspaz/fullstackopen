@@ -98,6 +98,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
     })
 
     test("Agregar un blog sin authorization", async () => {
+      const blogsAtStart = await blogsInDb()
 
       const newBlog = {
           title: '',
@@ -114,7 +115,7 @@ describe("cuando inicialmente hay algunas notas inicializadas", () => {
           
       const res = await blogsInDb()
       
-      assert.strictEqual(res.body.length, blogsAtStart.length)
+      assert.strictEqual(res.length, blogsAtStart.length)
     })
 
     // test("a specific blog can be viewed", async () => {
