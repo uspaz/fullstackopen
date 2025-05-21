@@ -5,7 +5,7 @@ import Login from './components/Login';
 import "./styles.css"
 
 import noteService from './services/notes'
-import loginService from './services/loginService';
+import loginService from './services/login';
 
 
 function App() {

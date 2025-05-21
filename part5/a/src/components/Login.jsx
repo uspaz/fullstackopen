@@ -1,4 +1,3 @@
-import React from 'react'
 
 const Login = ( {handleLogin, username, password, setUsername, setPassword} ) => {
   return (
