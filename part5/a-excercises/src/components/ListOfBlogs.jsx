@@ -1,6 +1,6 @@
-import React from 'react'
+import Blog from "./Blog"
 
-const ListOfBlogs = (blogs) => {
+const ListOfBlogs = ({blogs}) => {
   return (
     <>
     {blogs.map(blog =>

@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import blogService from './services/blogs'
-import ListOfBlogs from './components/ListOfBlogs'
+
 import Login from './components/Login'
+import ListOfBlogs from './components/ListOfBlogs'
+import AddBlogs from './components/AddBlogs'
+
+import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
@@ -9,20 +12,30 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [newBlog, setNewBlog] = useState({ 
+    title: "", 
+    author: "", 
+    url: "" 
+  })  
+
+    
+ 
+
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
-
-  useEffect(() => {
-    const loggedUser = window.localStorage.getItem("loggedBlogAppUser")
-    if(loggedUser){
-      const user = JSON.parse(loggedUser)
-      setUser(user)
-      blogService.setToken(user.token)
+    const fetchUser = async () => {
+      const loggedUser = window.localStorage.getItem("loggedBlogAppUser")
+      if(loggedUser){
+        const user = JSON.parse(loggedUser)
+        setUser(user)
+        blogService.setToken(user.token)
+        const getBlogs = await blogService.getAll()
+        setBlogs( getBlogs )
+      }
     }
+    
+    fetchUser()
     
   }, [])
 
@@ -34,16 +47,36 @@ const App = () => {
         username,
         password
       })
-
-      window.localStorage.setItem("loggedNoteAppUser", JSON.stringify(user))
-      noteService.setToken(user.token)
+      
+      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user))
+      blogService.setToken(user.token)
       setUser(user)
       setUsername("")
       setPassword("")
+
+      const getBlogs = await blogService.getAll()
+      setBlogs( getBlogs )
     } catch (error) {
       console.log(error);
       
     }
+  }
+
+  function handleLogout(){
+    window.localStorage.removeItem("loggedBlogAppUser")
+    window.localStorage.clear()
+    setUser(null)
+  }
+
+  async function addBlogs(e){
+    e.preventDefault()
+    
+    const createBlog = await blogService.create(newBlog)
+    setBlogs([...blogs, createBlog])
+    setMessage(true)
+    setTimeout(() => {
+      setMessage(false)
+    }, 1500)
   }
   
 
@@ -53,12 +86,15 @@ const App = () => {
           <Login handleLogin={handleLogin} username={username} password={password} setPassword={setPassword} setUsername={setUsername} />
         :
         <>
-          <h2>blogs</h2>
-          <ListOfBlogs blogs={blogs} />    
+          <h2 style={{display: "inline-block", marginRight: "15px"}}>blogs por {user.name}</h2>
+          <button onClick={handleLogout}>Logout</button>  
+          <ListOfBlogs blogs={blogs} />
+          <h3>Nuevos blogs:</h3>
+          <AddBlogs blog={newBlog} setNewBlog={setNewBlog} addBlogs={addBlogs}/>
         </>
       }
       
-      
+      {message ? <p>El blog se creo con éxito</p> : null}
     </>
   )
 }

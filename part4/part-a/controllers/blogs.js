@@ -46,24 +46,25 @@ blogsRouter.post('/',  async (req, res) => {
 
     const user = await User.findById(req.user.id)
 
-const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user.id 
+    const blog = new Blog({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes,
+        user: user.id 
+    })
+
+
+    if(blog.title && blog.author && blog.url){
+        const savedBlog = await blog.save()
+        user.blogs = user.blogs.concat(savedBlog._id)
+        await user.save()
+        res.status(201).json(savedBlog)
+        
+    }else{
+        res.status(400).end()
+    }  
 })
-
-
-if(blog.title && blog.author && blog.url){
-    const savedBlog = await blog.save()
-    user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
-    res.status(201).json(savedBlog)
-    
-}else{
-    res.status(400).end()
-}    
 
 blogsRouter.put("/:id", async (req, res) => {
     const body = req.body
@@ -80,6 +81,5 @@ blogsRouter.put("/:id", async (req, res) => {
     res.status(202).json(updateBlog)
 })
 
-})
 
 module.exports = blogsRouter
