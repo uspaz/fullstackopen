@@ -9,17 +9,22 @@ const Toggable = (props) => {
 
   return (
     <>
-        { visible ?
-            <>
-                {props.childen}
-                <button onClick={toggleVisibility}>cancel</button>
-            </>
-        :
-            <>
-            </>
-        
-        }
+        <div style={{display: visible ? "" : "none"}}>
+            {props.children}
+            <button 
+                onClick={toggleVisibility}
+                style={{ display: "block"}}>
+                cancel
+            </button>
+        </div>
+        <div style={{display: visible ? "none" : ""}}>
+            <button 
+                onClick={toggleVisibility}>
+                {props.buttonLabel}
+            </button>
+        </div>     
     </>
+    
     
     
   )

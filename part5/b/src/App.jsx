@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Note } from "./components/Note";
 import { NoteForm } from "./components/NoteForm";
-import Login from './components/Login';
+import LoginForm from './components/LoginForm';
 import "./styles.css"
 
 import noteService from './services/notes'
 import loginService from './services/login';
+import Toggable from './components/Toggable';
 
 
 function App() {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState({ content:"" })
   const [showAll, setShowAll] = useState(false)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
 
 
@@ -38,21 +36,14 @@ function App() {
     
   }, [])
   
-
-  function addNote(e){
-    e.preventDefault();
-    const noteObject = {
-      content: newNote.content,
-      important: Math.random() > 0.5,
-    }
-
+  function addNote(noteObject){
     noteService
       .create(noteObject)
       .then(newNote => {
         setNotes(notes.concat(newNote))
-        setNewNote('')
       })
   }
+  
 
   function toggleImportance(id){
     const note = notes.find( (note) => note.id === id );
@@ -72,71 +63,41 @@ function App() {
     :
     notes
 
+  const login = async (username, password) => {
+    const user = await loginService.login({
+      username, password
+    })
 
-  async function handleLogin(e){
-    e.preventDefault()
+    window.localStorage.setItem("loggedNoteAppUser", JSON.stringify(user))
+    noteService.setToken(user.token)
+    setUser(user)
+  }
 
-    try{
-      const user = await loginService.login({
-        username, password
-      })
-
-      window.localStorage.setItem("loggedNoteAppUser", JSON.stringify(user))
-      noteService.setToken(user.token)
-      setUser(user)
-      setUsername("")
-      setPassword("")
-
-    }catch(error){
-      console.log(error);
-      
-    }
-  } 
+  
 
   return (
     <>
       {user ? 
-        <h1 style={{color: "green"}}>Notas by {user.name}</h1>
+          <>
+            <h1 style={{color: "green"}}>Notas by {user.name}</h1>
+            
+              <button onClick={() => setShowAll(!showAll)}>Mostrar importancia</button>
+
+              <Note notes={filteredNotes} toggleImportance={toggleImportance} />
+              <Toggable buttonLabel="create note">
+                <NoteForm createNote={addNote} /> 
+              </Toggable>
+      
+          </>
         : 
         <>
-          <h1 style={{color: "green"}}>Notas</h1>
-          <button 
-            onClick={() => setLoginVisible(true)}
-            style={{ display: "block"}}
-          >login</button>
-          <Toggable>
-            <Login 
-              handleLogin={handleLogin}
-              setPassword={setPassword}
-              setUsername={setUsername}
-              username={username}
-              password={password}
-            />
+          <h1 style={{color: "green"}}>Notas</h1>        
+          <Toggable buttonLabel="login">
+            <LoginForm login={login}/>
           </Toggable>
         </>
       }
-
-
-      {loginVisible ? 
-        <>
-          
-         
-        </>
-        
-        :
-        (
-          <>
-            <button onClick={() => setShowAll(!showAll)}>Mostrar importancia</button>
-
-            <Note notes={filteredNotes} toggleImportance={toggleImportance} />
-            
-            <NoteForm addNote={addNote} setNewNote={setNewNote} newNote={newNote} /> 
-          </>
-        )
-      }
-
-      
-      
+     
     </>
   )
 }
