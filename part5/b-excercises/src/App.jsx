@@ -10,18 +10,9 @@ import Toggable from './components/Toggable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
-  const [newBlog, setNewBlog] = useState({ 
-    title: "", 
-    author: "", 
-    url: "" 
-  })  
-
-    
- 
+  
 
 
   useEffect(() => {
@@ -40,20 +31,28 @@ const App = () => {
     
   }, [])
 
-  async function handleLogin(e){
-    e.preventDefault()
+  
 
+  function handleLogout(){
+    window.localStorage.removeItem("loggedBlogAppUser")
+    window.localStorage.clear()
+    setUser(null)
+  }
+
+  const createBlog = async (newObject) => {
+    const createBlog = await blogService.create(newObject)
+    setBlogs(createBlog)
+    setMessage(true)
+    setTimeout(() => setMessage(false), 1500)
+  }
+
+  const handleLogin = async (newObject) => {
     try {
-      const user = await loginService.login({
-        username,
-        password
-      })
+      const user = await loginService.login(newObject)
       
       window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
-      setUsername("")
-      setPassword("")
 
       const getBlogs = await blogService.getAll()
       setBlogs( getBlogs )
@@ -62,29 +61,12 @@ const App = () => {
       
     }
   }
-
-  function handleLogout(){
-    window.localStorage.removeItem("loggedBlogAppUser")
-    window.localStorage.clear()
-    setUser(null)
-  }
-
-  async function addBlogs(e){
-    e.preventDefault()
-    
-    const createBlog = await blogService.create(newBlog)
-    setBlogs([...blogs, createBlog])
-    setMessage(true)
-    setTimeout(() => {
-      setMessage(false)
-    }, 1500)
-  }
   
 
   return (
     <>
       { !user ?
-          <Login handleLogin={handleLogin} username={username} password={password} setPassword={setPassword} setUsername={setUsername} />
+          <Login handleLogin={handleLogin} />
         :
         <>
           <h2 style={{display: "inline-block", marginRight: "15px"}}>blogs por {user.name}</h2>
@@ -92,7 +74,7 @@ const App = () => {
           <ListOfBlogs blogs={blogs} />
           <h3>Nuevos blogs:</h3>
           <Toggable buttonLabel="new blog" >
-            <AddBlogs blog={newBlog} setNewBlog={setNewBlog} addBlogs={addBlogs}/>
+            <AddBlogs createBlog={createBlog}/>
           </Toggable>
         </>
       }
