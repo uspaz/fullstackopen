@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Note } from "./components/Note";
 import { NoteForm } from "./components/NoteForm";
 import LoginForm from './components/LoginForm';
@@ -13,18 +13,18 @@ function App() {
   const [notes, setNotes] = useState([])
   const [showAll, setShowAll] = useState(false)
   const [user, setUser] = useState(null)
-
+  const noteFormRef = useRef()
 
   
 
-  // useEffect( () => {
+  useEffect( () => {
 
-  //   noteService
-  //     .getAll()
-  //     .then( notes => {
-  //       setNotes(notes)
-  //     })
-  // }, [])
+    noteService
+      .getAll()
+      .then( notes => {
+        setNotes(notes)
+      })
+  }, [])
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem("loggedNoteAppUser")
@@ -37,6 +37,7 @@ function App() {
   }, [])
   
   function addNote(noteObject){
+    noteFormRef.current.toggleVisibility()
     noteService
       .create(noteObject)
       .then(newNote => {
@@ -58,10 +59,7 @@ function App() {
     })
   }
 
-  const filteredNotes = showAll ? 
-    notes.filter((note) => note.important === true)
-    :
-    notes
+ 
 
   const login = async (username, password) => {
     const user = await loginService.login({
@@ -83,8 +81,8 @@ function App() {
             
               <button onClick={() => setShowAll(!showAll)}>Mostrar importancia</button>
 
-              <Note notes={filteredNotes} toggleImportance={toggleImportance} />
-              <Toggable buttonLabel="create note">
+              <Note notes={notes} showAll={showAll} toggleImportance={toggleImportance} />
+              <Toggable buttonLabel="create note" ref={noteFormRef}>
                 <NoteForm createNote={addNote} /> 
               </Toggable>
       
