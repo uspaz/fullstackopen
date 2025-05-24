@@ -61,6 +61,11 @@ const App = () => {
       
     }
   }
+
+  const addLikes = async (id, newObject) => {
+    const updatedBlog = await blogService.update(id, newObject)
+    setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
+  }
   
 
   return (
@@ -71,7 +76,7 @@ const App = () => {
         <>
           <h2 style={{display: "inline-block", marginRight: "15px"}}>blogs por {user.name}</h2>
           <button onClick={handleLogout}>Logout</button>  
-          <ListOfBlogs blogs={blogs} />
+          <ListOfBlogs blogs={blogs} addLikes={addLikes}/>
           <h3>Nuevos blogs:</h3>
           <Toggable buttonLabel="new blog" >
             <AddBlogs createBlog={createBlog}/>

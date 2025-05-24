@@ -1,10 +1,19 @@
 import { useState } from "react"
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, addLikes}) => {
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
     setVisible(!visible)
+  }
+  
+  const handleLikes = () => {
+    addLikes(blog.id, { 
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1
+    })
   }
 
   const styling = { marginLeft: "10px"}
@@ -19,7 +28,7 @@ const Blog = ({ blog }) => {
           </p>
           <p>realizado por {blog.author}</p>
           <a href="http://localhost:5173/">{blog.url}</a>
-          <p>Likes: {blog.likes} - <button >likes</button></p>
+          <p>Likes: {blog.likes} - <button onClick={handleLikes}>likes</button></p>
         </>
         :
         <div >

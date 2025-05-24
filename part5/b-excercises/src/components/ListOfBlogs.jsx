@@ -1,10 +1,10 @@
 import Blog from "./Blog"
 
-const ListOfBlogs = ({blogs}) => {
+const ListOfBlogs = ({blogs, addLikes}) => {
   return (
     <>
     {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} /> 
+        <Blog key={blog.id} blog={blog} addLikes={addLikes}/> 
     )}
     </>
   )
