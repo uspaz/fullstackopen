@@ -68,6 +68,13 @@ const App = () => {
     const updatedBlog = await blogService.update(id, newObject)
     setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
   }
+
+  const handleRemove = async (id) => {
+    if(window.confirm("Borrar blog")){
+      await blogService.remove(id)
+      setBlogs(prevBlogs => prevBlogs.filter(b => b.id !== id))
+    }
+  }
   
 
   return (
@@ -78,7 +85,7 @@ const App = () => {
         <>
           <h2 style={{display: "inline-block", marginRight: "15px"}}>blogs por {user.name}</h2>
           <button onClick={handleLogout}>Logout</button>  
-          <ListOfBlogs blogs={blogs} addLikes={addLikes}/>
+          <ListOfBlogs blogs={blogs} addLikes={addLikes} remove={handleRemove} user={user.id} />
           <h3>Nuevos blogs:</h3>
           <Toggable buttonLabel="new blog" >
             <AddBlogs createBlog={createBlog}/>

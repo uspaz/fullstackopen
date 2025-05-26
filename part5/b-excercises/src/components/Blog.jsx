@@ -1,9 +1,11 @@
 import { useState } from "react"
 
-const Blog = ({ blog, addLikes}) => {
+const Blog = ({ blog, addLikes, remove, user}) => {
   const [visible, setVisible] = useState(false)
-  
 
+  console.log(blog);
+  
+    
   const toggleVisibility = () => {
     setVisible(!visible)
   }
@@ -31,7 +33,15 @@ const Blog = ({ blog, addLikes}) => {
           <p>realizado por {blog.author}</p>
           <a href="http://localhost:5173/">{blog.url}</a>
           <p>Likes: {blog.likes} - <button onClick={handleLikes}>likes</button></p>
-          <p>{blog.user.name}</p>
+          {blog.user.id === user ? 
+            (<button 
+                style={{ marginBottom: "10px"}}
+                onClick={() => remove(blog.id)}>
+                Eliminar
+              </button>) 
+            : 
+            ""
+          }
         </>
         :
         <div >
