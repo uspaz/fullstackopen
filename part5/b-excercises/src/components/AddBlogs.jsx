@@ -1,3 +1,4 @@
+import { useState } from "react"
 
 const AddBlogs = ({createBlog}) => {
   const [newBlog, setNewBlog] = useState({ 
@@ -9,6 +10,11 @@ const AddBlogs = ({createBlog}) => {
    const handleBlogs = (e) => {
     e.preventDefault()
     createBlog(newBlog)
+    setNewBlog({
+      title: "", 
+      author: "", 
+      url: "" 
+    })
   }
 
   return (
@@ -20,7 +26,7 @@ const AddBlogs = ({createBlog}) => {
           id="title" 
           style={{ margin: "8px 0px", width: "225px"}} 
           value={newBlog.title} 
-          onChange={({target}) => setNewBlog({...blog, title: target.value})}/>
+          onChange={({target}) => setNewBlog({...newBlog, title: target.value})}/>
         <br />
 
         <label htmlFor="author">Autor:</label>
@@ -29,7 +35,7 @@ const AddBlogs = ({createBlog}) => {
           id="author" 
           style={{ margin: "8px 0px", width: "225px"}} 
           value={newBlog.author} 
-          onChange={({target}) => setNewBlog({...blog, author: target.value})}/>
+          onChange={({target}) => setNewBlog({...newBlog, author: target.value})}/>
         <br />
         
         <label htmlFor="url">Url:</label>
@@ -38,7 +44,7 @@ const AddBlogs = ({createBlog}) => {
           id="url" 
           style={{ margin: "8px 0px", width: "225px"}} 
           value={newBlog.url} 
-          onChange={({target}) => setNewBlog({...blog, url: target.value})}/>
+          onChange={({target}) => setNewBlog({...newBlog, url: target.value})}/>
         <br />
 
         <button 

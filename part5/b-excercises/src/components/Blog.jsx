@@ -2,6 +2,7 @@ import { useState } from "react"
 
 const Blog = ({ blog, addLikes}) => {
   const [visible, setVisible] = useState(false)
+  
 
   const toggleVisibility = () => {
     setVisible(!visible)
@@ -12,7 +13,8 @@ const Blog = ({ blog, addLikes}) => {
       title: blog.title,
       author: blog.author,
       url: blog.url,
-      likes: blog.likes + 1
+      likes: blog.likes + 1,
+      user: blog.user
     })
   }
 
@@ -29,6 +31,7 @@ const Blog = ({ blog, addLikes}) => {
           <p>realizado por {blog.author}</p>
           <a href="http://localhost:5173/">{blog.url}</a>
           <p>Likes: {blog.likes} - <button onClick={handleLikes}>likes</button></p>
+          <p>{blog.user.name}</p>
         </>
         :
         <div >

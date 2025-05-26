@@ -21,9 +21,11 @@ const App = () => {
       if(loggedUser){
         const user = JSON.parse(loggedUser)
         setUser(user)
+
+
         blogService.setToken(user.token)
         const getBlogs = await blogService.getAll()
-        setBlogs( getBlogs )
+        setBlogs( getBlogs)
       }
     }
     
@@ -41,7 +43,7 @@ const App = () => {
 
   const createBlog = async (newObject) => {
     const createBlog = await blogService.create(newObject)
-    setBlogs(createBlog)
+    setBlogs(prevBlogs => [...prevBlogs, createBlog])
     setMessage(true)
     setTimeout(() => setMessage(false), 1500)
   }
