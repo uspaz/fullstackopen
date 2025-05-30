@@ -14,7 +14,7 @@ const Toggable = forwardRef((props, refs) => {
 
   return (
     <>
-        <div style={{display: visible ? "" : "none"}}>
+        <div style={{display: visible ? "" : "none"}} className='toggableContent'>
             {props.children}
             <button 
                 onClick={toggleVisibility}
