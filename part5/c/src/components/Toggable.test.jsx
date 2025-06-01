@@ -24,4 +24,26 @@ describe('<Toggable />', () => {
         const div = container.querySelector(".toggableContent")
         expect(div).toHaveStyle("display: none")
     })
+
+    test("after clicking the button, children are desplayed", async () => {
+        const user = userEvent.setup()
+        const button = screen.getByText("show...")
+        await user.click(button)
+    
+        const div = container.querySelector(".toggableContent")
+        expect(div).not.toHaveStyle("display: none")
+    })
+
+    test("toggled content can be closed", async () => {
+        const user = userEvent.setup()
+        const button = screen.getByText("show...")
+        await user.click(button)
+
+        const closeButton = screen.getByText("cancel")
+        await user.click(closeButton)
+    
+        const div = container.querySelector(".toggableContent")
+        expect(div).toHaveStyle("display: none")
+    })
+
 })

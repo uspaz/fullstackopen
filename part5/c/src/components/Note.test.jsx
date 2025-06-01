@@ -37,7 +37,7 @@ test('render content', () => {
 
     const element = screen.getByText('importante')
 
-    screen.debug(element)
+    // screen.debug(element)
 
      expect(element).toBeDefined()
 })
