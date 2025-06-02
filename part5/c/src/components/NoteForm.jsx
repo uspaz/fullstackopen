@@ -13,7 +13,7 @@ export const NoteForm = ({ createNote }) => {
   }
 
   return (
-    <form onSubmit={addNote}>
+    <form onSubmit={addNote} className='form'>
         <label 
           style={{margin: "0px 10px"}} 
           htmlFor="note">Nota:

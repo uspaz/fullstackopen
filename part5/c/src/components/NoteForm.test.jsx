@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import NoteForm from "./NoteForm"
+import { NoteForm } from "./NoteForm"
 
 test("<NoteForm /> updates parent state and calls onSubmit", async () => {
     const createNote = vi.fn()
@@ -9,15 +9,14 @@ test("<NoteForm /> updates parent state and calls onSubmit", async () => {
 
     render(<NoteForm createNote={createNote} />)
 
-    const input = screen.getByText("note")
+    const input = screen.getByRole("textbox")
     const sendButton = screen.getByText("Agregar nota")
 
     await user.type(input, "testing a form...")
-    screen.debug(input)
-    // await user.click(sendButton)
+    await user.click(sendButton)
 
-    // expect(createNote.mock.calls).toHaveLength(1)
-    // console.log(createNote.mock.calls);
+    expect(createNote.mock.calls).toHaveLength(1)
+    console.log(createNote.mock.calls);
     
-    // expect(createNote.mock.calls[0][0].content).toBe("testing a form...")
+    expect(createNote.mock.calls[0][0].content).toBe("testing a form...")
 })
