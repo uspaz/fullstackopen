@@ -24,6 +24,7 @@ const AddBlogs = ({ createBlog }) => {
             <input
                 type="text"
                 id="title"
+                placeholder="title..."
                 style={{ margin: "8px 0px", width: "225px" }}
                 value={newBlog.title}
                 onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}/>
@@ -33,6 +34,7 @@ const AddBlogs = ({ createBlog }) => {
             <input
                 type="text"
                 id="author"
+                placeholder="author..."
                 style={{ margin: "8px 0px", width: "225px" }}
                 value={newBlog.author}
                 onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}/>
@@ -42,6 +44,7 @@ const AddBlogs = ({ createBlog }) => {
             <input
                 type="text"
                 id="url"
+                placeholder="url..."
                 style={{ margin: "8px 0px", width: "225px" }}
                 value={newBlog.url}
                 onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}/>
